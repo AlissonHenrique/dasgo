@@ -13,8 +13,7 @@ import { useSidebarDrawer } from "../../contexts/SidebarDrawerContext";
 import { SidebarNav } from "./SidebarNav";
 
 export function Sidebar() {
-const {isOpen,onClose} = useSidebarDrawer()
-
+  const { isOpen, onClose } = useSidebarDrawer();
 
   const isDrawerSidebar = useBreakpointValue({
     base: true,
@@ -23,17 +22,18 @@ const {isOpen,onClose} = useSidebarDrawer()
 
   if (isDrawerSidebar) {
     return (
-      <Drawer  isOpen={isOpen} placement="left" onClose={onClose}>
-      <DrawerOverlay>
-        <DrawerContent bg="gray.800" padding="4">
-          <DrawerCloseButton marginTop="6" />
-          <DrawerHeader>Navegação</DrawerHeader>
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+        <DrawerOverlay>
+          <DrawerContent bg="gray.800" padding="4">
+            <DrawerCloseButton marginTop="6" />
+            <DrawerHeader>Navegação</DrawerHeader>
 
-          <DrawerBody>
-            <SidebarNav />
-          </DrawerBody>
-        </DrawerContent>
-      </DrawerOverlay></Drawer>
+            <DrawerBody>
+              <SidebarNav />
+            </DrawerBody>
+          </DrawerContent>
+        </DrawerOverlay>
+      </Drawer>
     );
   }
 

@@ -11,9 +11,6 @@ import { NavLink } from "./NavLink";
 import { NavSection } from "./NavSection";
 
 export function SidebarNav() {
-
-
-
   return (
     <Stack spacing="12" align="flex-start">
       <NavSection title="GERAL">

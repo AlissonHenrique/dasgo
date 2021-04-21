@@ -18,47 +18,36 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { RiAddLine, RiPencilLine, RiRefreshLine } from "react-icons/ri";
+import { queryClient } from "../../services/queryClient";
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Sidebar } from "../../components/Sidebar";
-import { useQuery } from "react-query";
+import { useUsers } from "../../services/hooks/useUsers";
+import { api } from "../../services/api";
+
 export default function UserList() {
   const [page, setPage] = useState(1);
-  //const { data, isLoading, error, isFetching, refetch } = useUsers(page);
 
-  const { data, isLoading, error } = useQuery(
-    "users",
-    async () => {
-      const response = await fetch("http://localhost:3000/api/users");
-      const data = await response.json();
-
-      const users = data.users.map((user) => {
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          createdAt: new Date(user.createdAt).toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          }),
-        };
-      });
-
-      return users;
-    },
-    {
-      staleTime: 1000 * 5,
-    }
-  );
+  const { data, isLoading, error, isFetching } = useUsers(page);
 
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   });
-
+  async function handlePrefetchUser(userId: string) {
+    await queryClient.prefetchQuery(
+      ["user", userId],
+      async () => {
+        const response = await api.get(`users/${userId}`);
+        return response.data;
+      },
+      {
+        staleTime: 1000 * 60 * 10, //  10min
+      }
+    );
+  }
   return (
     <Box>
       <Header />
@@ -76,9 +65,9 @@ export default function UserList() {
           <Flex marginBottom="8" justify="space-between" align="center">
             <Heading size="lg" fontWeight="normal">
               Usuários
-              {/* {!isLoading && isFetching && (
-              <Spinner size="sm" color="gray.500" marginLeft="4" />
-            )}   */}
+              {!isLoading && isFetching && (
+                <Spinner size="sm" color="gray.500" marginLeft="4" />
+              )}
             </Heading>
 
             <Stack direction="row" spacing="3">
@@ -88,7 +77,7 @@ export default function UserList() {
                 colorScheme="blue"
                 leftIcon={<Icon as={RiRefreshLine} fontSize="20" />}
                 //onClick={() => refetch()}
-                //disabled={isLoading || isFetching}
+                disabled={isLoading || isFetching}
               >
                 Atualizar
               </Button>
@@ -129,7 +118,7 @@ export default function UserList() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {data.map((user) => (
+                  {data.users.map((user) => (
                     <Tr>
                       <Td paddingX={["4", "4", "6"]}>
                         <Checkbox colorScheme="pink" />
@@ -138,7 +127,7 @@ export default function UserList() {
                         <Box>
                           <Link
                             color="purple.400"
-                            // onMouseEnter={() => handlePrefetchUser(user.id)}
+                            onMouseEnter={() => handlePrefetchUser(user.id)}
                           >
                             <Text fontWeight="bold">{user.name}</Text>
                           </Link>
@@ -167,9 +156,9 @@ export default function UserList() {
               </Table>
 
               <Pagination
-              //  totalCountOfRegisters={data.totalCount}
-              //  currentPage={page}
-              //  onPageChange={setPage}
+                totalCountOfRegisters={data.totalCount}
+                currentPage={page}
+                onPageChange={setPage}
               />
             </>
           )}

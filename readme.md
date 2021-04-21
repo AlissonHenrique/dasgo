@@ -1,8 +1,6 @@
-# dashgo.
-
-<p align="center">
-dashgo.
-</p>
+<h1 align="center">  
+    dashgo.
+</h1>
 
 ### :computer: Project
 
